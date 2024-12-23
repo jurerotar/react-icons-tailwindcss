@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "description": "A Tailwind CSS plugin for react-icons. Generate dynamic class names for icons from popular React icon libraries.",
   "author": "Jure Rotar <hello@jurerotar.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
