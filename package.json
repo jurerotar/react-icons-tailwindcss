@@ -1,0 +1,49 @@
+{
+  "name": "react-icons-tailwindcss",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "author": "Jure Rotar <hello@jurerotar.com>",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/jurerotar/react-icons-tailwindcss#README",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurerotar/react-icons-tailwindcss.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jurerotar/react-icons-tailwindcss/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "format": "biome format . --write",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --apply",
+    "prepublishOnly": "npm run build && npm run build:types",
+    "release": "npm publish --access public"
+  },
+  "peerDependencies": {
+    "react-icons": ">= 5",
+    "tailwindcss": ">= 3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/react-dom": "19.0.2",
+    "tailwindcss": "3.4.17",
+    "tsup": "8.3.5",
+    "typescript": "5.7.2"
+  },
+  "keywords": [
+    "tailwindcss",
+    "react-icons",
+    "icons",
+    "plugin"
+  ]
+}
