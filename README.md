@@ -15,17 +15,12 @@ Add the plugin to your Tailwind CSS configuration:
 ```typescript
 // tailwind.config.ts
 import type { Config } from 'tailwindcss';
-import { reactIconsTailwindcssPlugin } from 'react-icons-tailwindcss';
+import reactIconsTailwindcssPlugin from 'react-icons-tailwindcss';
 
 export default {
   // ... rest of config
   plugins: [
-    reactIconsTailwindcssPlugin({
-      // Select icon sets to generate CSS classes from. Option "all" generates CSS classes for all icon sets. Default is '[]'
-      sets: ['fa', 'si', 'lia'],
-      // Select individual icons to include. Default is '[]'
-      include: ['LuSwords'],
-    }),
+    reactIconsTailwindcssPlugin,
   ],
 } satisfies Config;
 ```
@@ -34,22 +29,18 @@ Or if you're using Tailwind CSS 4+:
 ```css
 /* app.css */
 @import 'tailwindcss';
-@plugin 'react-icons-tailwindcss' {
-  sets: fa, si, lia;
-  include: LuSwords;
-}
+@plugin 'react-icons-tailwindcss';
 ```
 
 ## Usage
 
-Select icon sets you would like to generate CSS classes for and add them to `sets` array in plugin configuration. You can use the value `'all'` to include all icon sets.
+You need to add two classes to your markup, base `icon` class and icon-specifier class with the syntax `icon-[{icon_set}-{icon_name}]`.
+Icon-specifier class is expecting a `camel-cased` icon name from `react-icons`.
 
-You may also include individual icons by adding their import name to `include` array.
+Example for `AiFillHeart`:
 
-Include an icon in your HTML by adding the appropriate class name:
 ```html
-<span class="icon-[fa-home]" />
-<span class="icon-[ai-fill-heart]" />
+<span class="icon icon-[ai-fill-heart]" />
 ```
 
 ## Configuration
@@ -73,9 +64,10 @@ Or if you're using Tailwind CSS 4+:
 }
 ```
 
-Generated class name for `AiFillHeart`:
+Example for `AiFillHeart`:
+
 ```html
-<span class="custom-icon-[ai-fill-heart]"></span>
+<span class="custom-icon custom-icon-[ai-fill-heart]"></span>
 ```
 
 ## Contributing

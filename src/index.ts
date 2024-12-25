@@ -1,21 +1,17 @@
-import plugin from 'tailwindcss/plugin';
+import { withOptions } from 'tailwindcss/plugin';
 import { IconsManifest, type IconType } from 'react-icons';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const splitOnUppercase = (input: string): string[] => {
-  return input.split(/(?=[A-Z])/);
-};
+const transformToCamelCase = (input: string[]): string => {
+  return input
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+}
 
-const renameIcon = (iconName: string, prefix: string): string => {
-  return `${prefix}-\\[${iconName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}\\]`;
-};
-
-const loadIcons = async (sets: string[], include: string[]): Promise<Map<string, IconType>> => {
+const loadIcons = async (): Promise<Map<string, IconType>> => {
   const icons = new Map<string, IconType>([]);
 
-  const filteredManifest = sets.includes('all') ? IconsManifest : IconsManifest.filter(({ id }) => sets.includes(id));
-
-  const iconSetPromises = filteredManifest.map(async ({ id }) => {
+  const iconSetPromises = IconsManifest.map(async ({ id }) => {
     try {
       const module = (await import(`react-icons/${id}`)).default;
 
@@ -28,68 +24,55 @@ const loadIcons = async (sets: string[], include: string[]): Promise<Map<string,
     }
   });
 
-  const iconIncludePromises = include.map(async (iconName) => {
-    const [setName] = splitOnUppercase(iconName);
-    const setNameLowercase = setName.toLowerCase();
-
-    // Skip if the whole set is already included
-    if (sets.includes(setNameLowercase)) {
-      return null;
-    }
-
-    try {
-      const module = (await import(`react-icons/${setNameLowercase}`))[iconName];
-      if (module) {
-        icons.set(iconName, module);
-      } else {
-        // biome-ignore lint/suspicious/noConsole: Error handling
-        console.warn(`Icon "${iconName}" not found in set "${setNameLowercase}"`);
-      }
-    } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: Error handling
-      console.error(`Failed to load icon "${iconName}" from set "${setNameLowercase}":`, error);
-    }
-
-    return null;
-  });
-
-  await Promise.all([...iconSetPromises, ...iconIncludePromises]);
+  await Promise.all(iconSetPromises);
 
   return icons;
 };
 
 type PluginOptions = {
   prefix?: string;
-  sets?: string[];
-  include?: string[];
-};
+}
 
-export const reactIconsTailwindcssPlugin = plugin.withOptions<PluginOptions>(({ prefix = 'icon', sets = [], include = [] } = {}) => {
-  return async ({ addUtilities }) => {
-    const icons: Map<string, IconType> = await loadIcons(sets, include);
+export default withOptions<PluginOptions>(({ prefix = 'icon' } = {}) => {
+  const baseDeclarations = {
+    width: '1em',
+    height: '1em',
+    backgroundColor: 'currentColor',
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+    maskPosition: 'center',
+  };
 
-    const baseDeclarations = {
-      width: '1em',
-      height: '1em',
-      backgroundColor: 'currentColor',
-      maskSize: '100% 100%',
-      maskRepeat: 'no-repeat',
-      maskPosition: 'center',
-    };
+  return async ({ addUtilities, matchUtilities }) => {
+    const icons = await loadIcons();
 
-    for (const [iconName, Icon] of icons) {
-      try {
-        const className = renameIcon(iconName, prefix);
-        addUtilities({
-          [`.${className}`]: {
-            ...baseDeclarations,
+    addUtilities({
+      [`.${prefix}`]: baseDeclarations,
+    });
+
+    matchUtilities({
+      [prefix]: (icon) => {
+        try {
+          const [...iconName] = icon.split('-');
+          const camelCasedIconName = transformToCamelCase(iconName);
+
+          const Icon = icons.get(camelCasedIconName);
+
+          if (!Icon) {
+            throw new Error(`Icon "${camelCasedIconName}" not found.`);
+          }
+
+          return {
             maskImage: `url("data:image/svg+xml,${encodeURIComponent(renderToStaticMarkup(Icon({})))}")`,
-          },
-        });
-      } catch (error) {
-        // biome-ignore lint/suspicious/noConsole: Error handling
-        console.error(`Failed to add utility for icon "${iconName}":`, error);
-      }
-    }
+          };
+        } catch (error) {
+          // biome-ignore lint/suspicious/noConsole: Error handling
+          console.error('Error generating utility for icon:', error);
+          return {
+            maskImage: 'none', // Fallback to avoid broken styles
+          };
+        }
+      },
+    });
   };
 });
