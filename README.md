@@ -7,7 +7,7 @@ A [Tailwind CSS](https://tailwindcss.com) plugin for [react-icons](https://githu
 Install the plugin via npm or yarn:
 
  ```bash
- npm install --save-dev react-icons-tailwindcss-plugin
+ npm install --save-dev react-icons-tailwindcss
  ```
 
 Add the plugin to your Tailwind CSS configuration:
