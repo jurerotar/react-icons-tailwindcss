@@ -1,19 +1,20 @@
 {
   "name": "react-icons-tailwindcss",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "license": "MIT",
   "description": "A Tailwind CSS plugin for react-icons. Generate dynamic class names for icons from popular React icon libraries.",
   "author": "Jure Rotar <hello@jurerotar.com>",
+  "homepage": "https://github.com/jurerotar/react-icons-tailwindcss#README",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
-  "homepage": "https://github.com/jurerotar/react-icons-tailwindcss#README",
   "publishConfig": {
     "access": "public"
   },
@@ -37,6 +38,7 @@
     "release": "npm publish --access public"
   },
   "peerDependencies": {
+    "tailwindcss": ">= 3 < 5",
     "react-icons": ">= 5",
     "react-dom": ">= 16"
   },
